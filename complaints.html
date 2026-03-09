@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>DM Tech – Complaints</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C8960C;
+    --gold-light: #F2C94C;
+    --gold-dark: #7A5C0A;
+    --black: #0A0A0A;
+    --black-soft: #1A1A1A;
+    --white: #FFFFFF;
+    --white-soft: #F5F0E8;
+    --red: #c0392b;
+    --green: #27ae60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #222; overflow-x: hidden; }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--black);
+    border-bottom: 2px solid var(--gold);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+    gap: 80px;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .nav-logo-fallback {
+    width: 48px; height: 48px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--gold);
+    background: var(--black);
+    letter-spacing: -1px;
+    text-decoration: none;
+  }
+
+  .nav-center {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 40px;
+  }
+
+  .nav-center li a {
+    display: block;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+
+  .nav-center li a:hover,
+  .nav-center li.active a {
+    color: var(--gold);
+  }
+
+  .nav-center li.has-dropdown {
+    position: relative;
+  }
+
+  .nav-submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--black);
+    border: 1px solid var(--gold-dark);
+    border-top: 2px solid var(--gold);
+    list-style: none;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.7);
+    z-index: 999;
+    margin-top: 0;
+  }
+
+  .nav-center li.has-dropdown:hover .nav-submenu {
+    display: block;
+  }
+
+  .nav-submenu li a {
+    display: block;
+    padding: 14px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 1px solid #222;
+    transition: background .2s, color .2s, padding-left .2s;
+    white-space: nowrap;
+  }
+
+  .nav-submenu li:last-child a {
+    border-bottom: none;
+  }
+
+  .nav-submenu li a:hover {
+    background: var(--gold);
+    color: var(--black);
+    padding-left: 26px;
+  }
+
+  .nav-center li.has-dropdown > a::after {
+    content: ' ▾';
+    font-size: 10px;
+    opacity: .7;
+  }
+
+  .nav-right-items {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-left: auto;
+  }
+
+  .nav-right-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gold-light);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+
+  .nav-right-item svg { width: 14px; height: 14px; fill: var(--gold); }
+
+  .nav-smc-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .nav-smc-group input {
+    background: #1a1a1a;
+    border: none;
+    color: #aaa;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    padding: 6px 10px;
+    outline: none;
+    width: 100px;
+  }
+
+  .nav-smc-group button {
+    background: var(--gold);
+    border: none;
+    color: var(--black);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 6px 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+
+  /* ─── HAMBURGER MENU ─── */
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 4px;
+  }
+
+  .hamburger-line {
+    width: 24px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+  }
+
+  .nav-mobile {
+    display: none;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--black);
+    border-bottom: 2px solid var(--gold);
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .nav-mobile.active {
+    max-height: 400px;
+    display: flex;
+  }
+
+  .nav-mobile li {
+    border-bottom: 1px solid #222;
+  }
+
+  .nav-mobile li:last-child {
+    border-bottom: none;
+  }
+
+  .nav-mobile li a {
+    display: block;
+    padding: 14px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .nav-mobile li a:hover,
+  .nav-mobile li.active a {
+    background: var(--gold-dark);
+    color: var(--gold);
+  }
+
+  .nav-mobile li.has-dropdown > a::after {
+    content: ' ▾';
+    font-size: 10px;
+  }
+
+  .nav-mobile .nav-submenu {
+    display: none;
+    position: static;
+    background: #111;
+    border: none;
+    box-shadow: none;
+    max-width: 100%;
+    margin-top: 0;
+  }
+
+  .nav-mobile li.has-dropdown.active .nav-submenu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-mobile .nav-submenu li {
+    border: none;
+    border-top: 1px solid #222;
+  }
+
+  .nav-mobile .nav-submenu li a {
+    padding: 12px 20px 12px 40px;
+    font-size: 13px;
+    background: #111;
+  }
+
+  /* ─── PAGE HERO ─── */
+  .page-hero {
+    margin-top: 72px;
+    background: linear-gradient(135deg, var(--black) 0%, #1a1200 60%, #0a0800 100%);
+    padding: 60px 80px;
+    border-bottom: 2px solid var(--gold-dark);
+    position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(201,168,76,.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(201,168,76,.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .page-hero-content { position: relative; z-index: 1; }
+  .page-hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(24px, 4vw, 42px); font-weight: 700;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .page-hero p {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(14px, 1.6vw, 17px); color: rgba(255,255,255,.65);
+    letter-spacing: 1px; max-width: 600px;
+  }
+  .breadcrumb {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; color: rgba(255,255,255,.4);
+    letter-spacing: 1px; margin-bottom: 16px; text-transform: uppercase;
+  }
+  .breadcrumb a { color: var(--gold-light); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--gold); }
+
+  /* ─── FORM SECTION ─── */
+  .form-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 40px 80px;
+  }
+
+  .form-card {
+    background: var(--white);
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  }
+
+  .form-card-header {
+    background: var(--gold);
+    padding: 18px 32px;
+  }
+  .form-card-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(14px, 2vw, 20px); font-weight: 700;
+    color: var(--black); letter-spacing: 3px; text-transform: uppercase;
+  }
+
+  .form-card-body { padding: 40px 40px 32px; }
+
+  /* Error message bar */
+  #msgdisplay {
+    display: none;
+    background: #fdf0f0;
+    border: 1px solid #f5c6c6;
+    border-left: 4px solid var(--red);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 3px;
+    margin-bottom: 24px;
+    letter-spacing: .3px;
+  }
+
+  /* Form grid */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #333;
+  }
+  .form-label .req { color: var(--red); margin-left: 2px; }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 3px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px; color: #222;
+    background: #fafafa;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    appearance: none;
+  }
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,150,12,.12);
+    background: #fff;
+  }
+  .form-input.error,
+  .form-select.error,
+  .form-textarea.error {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(192,57,43,.08);
+  }
+  .form-textarea { resize: vertical; min-height: 110px; }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  /* Submit row */
+  .form-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding-top: 8px;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, #d4af37, #f5e079);
+    color: var(--black);
+    border: 1px solid #e0c050;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 14px 52px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background .2s, transform .1s, box-shadow .2s;
+    box-shadow: 0 2px 8px rgba(200,150,12,.2);
+  }
+  .submit-btn:hover {
+    background: linear-gradient(135deg, #c8960c, #f0d060);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,150,12,.35);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  .form-note {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px; color: #888;
+    text-align: center;
+  }
+  .form-note u { color: #555; }
+
+  /* ─── SUCCESS OVERLAY ─── */
+  .success-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    animation: fadeIn .3s ease;
+  }
+  .success-overlay.show { display: flex; }
+
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .success-box {
+    background: var(--white);
+    border-top: 4px solid var(--green);
+    border-radius: 6px;
+    padding: 52px 60px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    animation: slideUp .35s ease;
+  }
+
+  @keyframes slideUp { from { transform: translateY(30px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: #eafaf1;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 36px;
+    border: 3px solid #a9dfbf;
+  }
+
+  .success-box h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--green); margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .success-box p {
+    font-size: 14px; color: #555; line-height: 1.8; margin-bottom: 8px;
+  }
+
+  .redirect-note {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; color: #aaa;
+    letter-spacing: .5px; margin-top: 20px;
+  }
+
+  .redirect-bar {
+    width: 100%; height: 4px;
+    background: #eee;
+    border-radius: 2px;
+    margin: 12px 0 0;
+    overflow: hidden;
+  }
+  .redirect-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    width: 0%;
+    transition: width linear;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--black-soft);
+    border-top: 2px solid var(--gold-dark);
+    padding: 30px 80px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 40px; flex-wrap: wrap;
+  }
+  .footer-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .footer-links a {
+    font-family: 'Rajdhani', sans-serif; font-size: 12px;
+    color: rgba(255,255,255,.5); text-decoration: none; letter-spacing: .5px;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy { font-family: 'Open Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,.3); text-align: right; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 16px; }
+    .nav-right { display: none; }
+    .page-hero { padding: 40px 24px; }
+    .form-section { padding: 30px 16px 60px; }
+    .form-card-body { padding: 24px 20px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .success-box { padding: 36px 28px; }
+    footer { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <!-- Logo on the left -->
+  <div class="nav-left">
+    <a href="home.html" class="nav-logo">
+      <img src="images/LOGO.png" alt="DM Logo">
+    </a>
+  </div>
+
+  <!-- Menu in center -->
+  <ul class="nav-center">
+    <li><a href="home.html">Home</a></li>
+    
+    <li><a href="Tv_guide.html">TV Guide</a></li>
+    <li class="has-dropdown active">
+      <a href="#">Consumer</a>
+      <ul class="nav-submenu">
+        <li><a href="consumer-corner.html">Consumer Corner</a></li>
+        <li class="active"><a href="complaints.html">Complaints</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+
+  <!-- Right side elements -->
+  <div class="nav-right-items">
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Operator Login
+    </div>
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Customer Login
+    </div>
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.59L19 8l-8 8z"/></svg>
+      Quick Pay
+    </div>
+    <div class="nav-smc-group">
+      <input type="text" placeholder="SMC / Mobile No">
+      <button>GO</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── PAGE HERO ─── -->
+<div class="page-hero">
+  <div class="page-hero-content">
+    <div class="breadcrumb">
+      <a href="home.html">Home</a> &nbsp;›&nbsp;
+      <a href="consumer-corner.html">Consumer</a> &nbsp;›&nbsp;
+      Complaints
+    </div>
+    <h1>Complaints</h1>
+    <p>Submit your complaint below and our support team will get back to you within 48 hours.</p>
+  </div>
+</div>
+
+<!-- ─── FORM SECTION ─── -->
+<section class="form-section">
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Send Us Your Query</h2>
+    </div>
+    <div class="form-card-body">
+
+      <div id="msgdisplay"></div>
+
+      <form id="complaintForm" novalidate>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First Name <span class="req">*</span></label>
+            <input type="text" id="firstName" class="form-input" maxlength="50" placeholder="Enter first name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last Name <span class="req">*</span></label>
+            <input type="text" id="lastName" class="form-input" maxlength="50" placeholder="Enter last name">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="email">Email <span class="req">*</span></label>
+            <input type="email" id="email" class="form-input" maxlength="100" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number <span class="req">*</span></label>
+            <input type="text" id="phone" class="form-input" maxlength="10" placeholder="10-digit mobile number">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="smartCard">Smart Card No <span style="font-weight:400;color:#999;">(Optional)</span></label>
+            <input type="text" id="smartCard" class="form-input" maxlength="11" placeholder="Your SMC number">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="city">City <span class="req">*</span></label>
+            <select id="city" class="form-select">
+              <option value="">-- Select City --</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Trichy">Trichy</option>
+              <option value="Salem">Salem</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="queryType">Query Type <span class="req">*</span></label>
+            <select id="queryType" class="form-select">
+              <option value="">-- Select Query Type --</option>
+              <option value="Technical">Technical Support</option>
+              <option value="Billing">Billing Related</option>
+              <option value="Service">Service Related</option>
+              <option value="Installation">Installation</option>
+              <option value="General">General Query</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="description">Description <span class="req">*</span></label>
+            <textarea id="description" class="form-textarea" maxlength="1000" placeholder="Describe your issue in detail..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" class="submit-btn" onclick="submitForm()">Submit Query</button>
+          <p class="form-note"><u>Note:</u> * All marked fields are mandatory</p>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SUCCESS OVERLAY ─── -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">✓</div>
+    <h2>Successfully Submitted!</h2>
+    <p>Thank you for reaching out to DM Tech. Your complaint has been received and a reference number has been sent to your email.</p>
+    <p>Our support team will respond within <strong>48 hours</strong>.</p>
+    <div class="redirect-note">Redirecting you to the homepage…</div>
+    <div class="redirect-bar">
+      <div class="redirect-bar-fill" id="redirectBarFill"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div>
+    
+  </div>
+  <div class="footer-copy">
+    All rights reserved © DM Tech<br>
+  </div>
+</footer>
+
+<script>
+  // ─── Helpers ───
+  function isValidEmail(v) {
+    return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(v);
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('msgdisplay');
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideError() {
+    var el = document.getElementById('msgdisplay');
+    el.style.display = 'none';
+    el.textContent = '';
+  }
+
+  function setError(id) {
+    document.getElementById(id).classList.add('error');
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.error').forEach(function(el) {
+      el.classList.remove('error');
+    });
+  }
+
+  // ─── Numeric only on phone & smart card ───
+  document.getElementById('phone').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+  document.getElementById('smartCard').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  // Clear field error on input
+  ['firstName','lastName','email','phone','city','queryType','description'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() { this.classList.remove('error'); hideError(); });
+    if (el) el.addEventListener('change', function() { this.classList.remove('error'); hideError(); });
+  });
+
+  // ─── Validate & Submit ───
+  function submitForm() {
+    clearErrors();
+    hideError();
+
+    var firstName   = document.getElementById('firstName').value.trim();
+    var lastName    = document.getElementById('lastName').value.trim();
+    var email       = document.getElementById('email').value.trim();
+    var phone       = document.getElementById('phone').value.trim();
+    var city        = document.getElementById('city').value;
+    var queryType   = document.getElementById('queryType').value;
+    var description = document.getElementById('description').value.trim();
+
+    var errors = [];
+
+    if (!firstName)   { errors.push('First Name');   setError('firstName'); }
+    if (!lastName)    { errors.push('Last Name');     setError('lastName'); }
+    if (!email) {
+      errors.push('Email'); setError('email');
+    } else if (!isValidEmail(email)) {
+      showError('Please enter a valid email address.');
+      setError('email');
+      return;
+    }
+    if (!phone) {
+      errors.push('Phone Number'); setError('phone');
+    } else if (phone.length !== 10) {
+      showError('Phone number must be exactly 10 digits.');
+      setError('phone');
+      return;
+    }
+    if (!city)        { errors.push('City');          setError('city'); }
+    if (!queryType)   { errors.push('Query Type');    setError('queryType'); }
+    if (!description) { errors.push('Description');   setError('description'); }
+
+    if (errors.length > 0) {
+      showError('Please fill in the required fields: ' + errors.join(', '));
+      return;
+    }
+
+    // ─── Show success overlay & redirect ───
+    var overlay = document.getElementById('successOverlay');
+    overlay.classList.add('show');
+
+    // Animate progress bar over 3 seconds then redirect
+    var fill = document.getElementById('redirectBarFill');
+    var duration = 3000; // ms
+    var start = null;
+
+    function animateBar(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration * 100, 100);
+      fill.style.width = progress + '%';
+      if (progress < 100) {
+        requestAnimationFrame(animateBar);
+      } else {
+        window.location.href = 'homepage.html';
+      }
+    }
+
+    requestAnimationFrame(animateBar);
+  }
+</script>
+
+</body>
+</html>

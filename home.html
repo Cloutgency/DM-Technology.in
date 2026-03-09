@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="favicon.png">
+<title>DM Tech – India's 1st HEVC Digital Set Top Box</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C8960C;
+    --gold-light: #F2C94C;
+    --gold-dark: #7A5C0A;
+    --black: #0A0A0A;
+    --black-mid: #111111;
+    --black-soft: #1A1A1A;
+    --white: #FFFFFF;
+    --white-soft: #F5F0E8;
+    --accent: #D4AF37;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--black);
+    border-bottom: 2px solid var(--gold);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 40px;
+    gap: 80px;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .nav-logo-fallback {
+    width: 48px; height: 48px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--gold);
+    background: var(--black);
+    letter-spacing: -1px;
+    text-decoration: none;
+  }
+
+  .nav-center {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 40px;
+  }
+
+  .nav-center li a {
+    display: block;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+
+  .nav-center li a:hover,
+  .nav-center li.active a {
+    color: var(--gold);
+  }
+
+  .nav-center li.has-dropdown {
+    position: relative;
+  }
+
+  .nav-submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--black);
+    border: 1px solid var(--gold-dark);
+    border-top: 2px solid var(--gold);
+    list-style: none;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.7);
+    z-index: 999;
+    margin-top: 0;
+  }
+
+  .nav-center li.has-dropdown:hover .nav-submenu {
+    display: block;
+  }
+
+  .nav-submenu li a {
+    display: block;
+    padding: 14px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 1px solid #222;
+    transition: background .2s, color .2s, padding-left .2s;
+    white-space: nowrap;
+  }
+
+  .nav-submenu li:last-child a {
+    border-bottom: none;
+  }
+
+  .nav-submenu li a:hover {
+    background: var(--gold);
+    color: var(--black);
+    padding-left: 26px;
+  }
+
+  .nav-center li.has-dropdown > a::after {
+    content: ' ▾';
+    font-size: 10px;
+    opacity: .7;
+  }
+
+  .nav-right-items {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-left: auto;
+  }
+
+  .nav-right-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gold-light);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+
+  .nav-right-item svg { width: 14px; height: 14px; fill: var(--gold); }
+
+  .nav-smc-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .nav-smc-group input {
+    background: #1a1a1a;
+    border: none;
+    color: #aaa;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    padding: 6px 10px;
+    outline: none;
+    width: 100px;
+  }
+
+  .nav-smc-group button {
+    background: var(--gold);
+    border: none;
+    color: var(--black);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 6px 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+
+  /* ─── HAMBURGER MENU ─── */
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 4px;
+  }
+
+  .hamburger-line {
+    width: 24px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+  }
+
+  .nav-mobile {
+    display: none;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--black);
+    border-bottom: 2px solid var(--gold);
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .nav-mobile.active {
+    max-height: 400px;
+    display: flex;
+  }
+
+  .nav-mobile li {
+    border-bottom: 1px solid #222;
+  }
+
+  .nav-mobile li:last-child {
+    border-bottom: none;
+  }
+
+  .nav-mobile li a {
+    display: block;
+    padding: 14px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .nav-mobile li a:hover,
+  .nav-mobile li.active a {
+    background: var(--gold-dark);
+    color: var(--gold);
+  }
+
+  .nav-mobile li.has-dropdown > a::after {
+    content: ' ▾';
+    font-size: 10px;
+  }
+
+  .nav-mobile .nav-submenu {
+    display: none;
+    position: static;
+    background: #111;
+    border: none;
+    box-shadow: none;
+    max-width: 100%;
+    margin-top: 0;
+  }
+
+  .nav-mobile li.has-dropdown.active .nav-submenu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-mobile .nav-submenu li {
+    border: none;
+    border-top: 1px solid #222;
+  }
+
+  .nav-mobile .nav-submenu li a {
+    padding: 12px 20px 12px 40px;
+    font-size: 13px;
+    background: #111;
+  }
+
+  /* ─── HERO SECTION (Image Slider) ─── */
+  .hero {
+    margin-top: 72px;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 20px);
+    min-height: 750px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
+
+  .hero-slide.active { opacity: 1; }
+
+  /* Hero dots */
+  .hero-dots {
+    position: absolute;
+    bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 10;
+  }
+
+  .hero-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(201,168,76,.3);
+    border: 1px solid var(--gold);
+    cursor: pointer;
+    transition: background .3s;
+  }
+
+  .hero-dot.active { background: var(--gold); }
+
+  /* ─── ADVANCED TECH SECTION ─── */
+  .section-advanced {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .advanced-image-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: url(images/bg1.png) no-repeat center right;
+    background-color: #c7c8ca;
+    background-size: auto 100%;
+    z-index: 1;
+  }
+
+  .advanced-image-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #f5f0e8 0%, rgba(245,240,232,.4) 30%, transparent 60%);
+    z-index: 2;
+  }
+
+  .advanced-content {
+    position: relative;
+    z-index: 3;
+    padding: 60px 80px;
+    max-width: 480px;
+  }
+
+  .advanced-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .advanced-title span { display: block; }
+
+  .advanced-desc {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.8;
+    max-width: 420px;
+  }
+
+  /* ─── ABOUT SECTION ─── */
+  .section-about {
+    background: var(--white);
+    padding: 0;
+  }
+
+  .about-header {
+    background: var(--gold);
+    text-align: center;
+    padding: 20px;
+  }
+
+  .about-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(18px, 2.5vw, 28px);
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .about-body {
+    padding: 50px 80px;
+    background: var(--white);
+  }
+
+  .about-body p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: clamp(13px, 1.1vw, 15px);
+    color: #222;
+    line-height: 1.9;
+    text-align: justify;
+    margin-bottom: 24px;
+  }
+
+  .about-body p:last-child { margin-bottom: 0; }
+
+  .about-body strong {
+    font-weight: 700;
+    color: #000;
+  }
+
+  /* ─── GET A NEW CONNECTION ─── */
+  .section-connection {
+    background: var(--white);
+    padding: 0 0 60px 0;
+  }
+
+  .connection-header {
+    background: var(--gold);
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 50px;
+  }
+
+  .connection-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(16px, 2.2vw, 26px);
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .connection-body {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0;
+    padding: 50px 80px;
+    text-align: left;
+    background: var(--white);
+  }
+
+  .connection-poster {
+    flex: 0 0 45%;
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding-right: 40px;
+    border-right: 1px solid #ddd;
+  }
+
+  .connection-poster img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.15);
+  }
+
+  .connection-info {
+    flex: 1;
+    padding-left: 40px;
+    border-left: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .connection-product-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 600;
+    color: #6a0dad;
+    text-align: left;
+    margin-bottom: 32px;
+    line-height: 1.3;
+  }
+
+  .connection-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 20px;
+    background: #f5f5f5;
+    border-radius: 6px;
+  }
+
+  .connection-features li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .connection-features li::before {
+    content: '●';
+    color: #6a0dad;
+    font-size: 14px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--black-soft);
+    border-top: 2px solid var(--gold-dark);
+    padding: 30px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+    text-decoration: none;
+    letter-spacing: .5px;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  .footer-copy {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,.3);
+    text-align: right;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1200px) {
+    nav {
+      gap: 30px;
+    }
+
+    .nav-center {
+      gap: 28px;
+    }
+
+    .nav-right-items {
+      gap: 16px;
+    }
+
+    .nav-right-item {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    nav {
+      padding: 0 16px;
+      gap: 16px;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+    }
+
+    .nav-left {
+      flex-shrink: 0;
+    }
+
+    .nav-logo img {
+      height: 40px;
+    }
+
+    .nav-center {
+      gap: 20px;
+      flex: 1;
+      margin: 0 16px;
+    }
+
+    .nav-center li a {
+      font-size: 13px;
+      padding: 6px 0;
+    }
+
+    .nav-right-items {
+      gap: 10px;
+      display: flex;
+      width: auto;
+      order: auto;
+    }
+
+    .nav-right-item {
+      font-size: 11px;
+    }
+
+    .nav-smc-group {
+      display: none;
+    }
+
+    .about-body {
+      padding: 30px 24px;
+    }
+
+    .advanced-content {
+      padding: 40px 24px;
+      max-width: 100%;
+    }
+
+    .connection-body {
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px;
+      gap: 40px;
+    }
+
+    .connection-poster {
+      width: 100%;
+      max-width: 350px;
+      padding-right: 0;
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 30px;
+    }
+
+    .connection-info {
+      width: 100%;
+      padding-left: 0;
+      text-align: left;
+    }
+
+    footer {
+      padding: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav {
+      padding: 0 12px;
+      gap: 12px;
+      height: 70px;
+    }
+
+    .nav-center {
+      gap: 14px;
+    }
+
+    .nav-center li a {
+      font-size: 12px;
+      padding: 4px 0;
+    }
+
+    .nav-right-items {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    nav {
+      padding: 0 10px;
+      gap: 8px;
+      height: auto;
+      min-height: 60px;
+    }
+
+    .nav-logo img {
+      height: 36px;
+    }
+
+    .nav-center {
+      gap: 12px;
+    }
+
+    .nav-center li a {
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-right-items {
+      display: none;
+    }
+
+    .advanced-content {
+      padding: 30px 16px;
+    }
+
+    .advanced-title {
+      font-size: 24px;
+    }
+
+    .about-body {
+      padding: 20px 16px;
+    }
+
+    .connection-body {
+      flex-direction: column;
+      padding: 30px 16px;
+      gap: 24px;
+    }
+
+    .connection-poster {
+      width: 100%;
+      max-width: 280px;
+      padding-right: 0;
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 24px;
+    }
+
+    .connection-info {
+      width: 100%;
+      text-align: left;
+    }
+
+    .connection-features {
+      gap: 14px;
+    }
+
+    .connection-features li {
+      font-size: 13px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <!-- Logo on the left -->
+  <div class="nav-left">
+    <a href="home.html" class="nav-logo">
+      <img src="images/LOGO.png" alt="DM Logo">
+    </a>
+  </div>
+
+  <!-- Menu in center -->
+  <ul class="nav-center">
+    <li class="active"><a href="home.html">Home</a></li>
+    <li><a href="Tv_guide.html">TV Guide</a></li>
+    <li class="has-dropdown">
+      <a href="#">Consumer</a>
+      <ul class="nav-submenu">
+        <li><a href="consumer-corner.html">Consumer Corner</a></li>
+        <li><a href="complaints.html">Complaints</a></li>
+      </ul>
+    </li>
+    <li><a href="contact.html">Contact</a></li>
+    
+  </ul>
+
+  <!-- Right side elements -->
+  <div class="nav-right-items">
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Operator Login
+    </div>
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Customer Login
+    </div>
+    <div class="nav-right-item">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.59L19 8l-8 8z"/></svg>
+      Quick Pay
+    </div>
+    <div class="nav-smc-group">
+      <input type="text" placeholder="SMC / Mobile No">
+      <button>GO</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO SECTION (Image Slider) ─── -->
+<section class="hero" id="home">
+
+  <!-- Slide 1 -->
+  <div class="hero-slide active" id="slide1">
+    <img src="images/01.jpeg" alt="Next-Gen Visual Excellence">
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="hero-slide" id="slide2">
+    <img src="images/02.jpeg" alt="India's 1st HEVC">
+  </div>
+
+  <!-- Hero dots -->
+  <div class="hero-dots">
+    <div class="hero-dot active" onclick="goToSlide(0)"></div>
+    <div class="hero-dot" onclick="goToSlide(1)"></div>
+  </div>
+</section>
+
+<!-- ─── ADVANCED TECH SECTION ─── -->
+<section class="section-advanced" id="consumer">
+  <div class="advanced-image-area"></div>
+  <div class="advanced-content">
+    <div class="advanced-title">
+      <span>Advanced Tech.</span>
+      <span>Enriched Lifestyle.</span>
+    </div>
+    <p class="advanced-desc">
+      Experience a new standard of home cinema. With cutting-edge innovation and two decades of sound design excellence, we connect you to your passion in breathtaking clarity and immersion.
+    </p>
+  </div>
+</section>
+
+<!-- ─── ABOUT DM TECH ─── -->
+<section class="section-about">
+  <div class="about-header">
+    <h2>About DM Tech</h2>
+  </div>
+  <div class="about-body">
+    <p>
+      With over two decades of excellence, DM Technologies stands as Tamil Nadu’s leading MSO and a pioneer in Indian cable technology. Our robust infrastructure and state-of-the-art control room ensure an interruption-free, cinema-quality experience that remains unaffected by adverse weather. We are proud to offer the highest number of channels in the market, with over 700 HD and SD channels delivered through our high-performance set-top boxes. Powered by exclusive chipsets, our STBs feature stunning picture quality, surround sound, and advanced functions like USB recording, Pause/Play Live TV, and a unique universal learning remote. Driven by a passion for innovation and a dedicated technical team, DM Tech continues to set the gold standard for digital cable entertainment across South India.
+     </p>
+  </div>
+</section>
+
+<!-- ─── GET A NEW CONNECTION ─── -->
+
+<section class="section-connection" id="contact">
+  <div class="connection-header">
+    <h2>Get a New DM Tech Connection</h2>
+  </div>
+  <div class="connection-body">
+
+    <!-- Poster Image -->
+    <div class="connection-poster">
+      <img src="images/tv_01.jpeg" alt="DM Tech Set Top Box">
+    </div>
+
+    <!-- Product Info -->
+    <div class="connection-info">
+      <h3 class="connection-product-title">DM Tech High Definition<br>Set top Box</h3>
+      <ul class="connection-features">
+        <li>HEVC DIGITAL SET TOP BOX</li>
+        <li>4K ULTRA HD</li>
+        <li>DOLBY ATMOS</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div>
+    
+  </div>
+  <div class="footer-copy">
+    All rights reserved © DM Tech<br>
+  </div>
+</footer>
+
+<script>
+  // ─── Hero Slideshow with Opacity Animation ───
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+  let current = 0;
+  let timer;
+
+  function goToSlide(idx) {
+    // Fade out current slide
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    
+    // Set new slide
+    current = idx;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    
+    // Reset timer
+    resetTimer();
+  }
+
+  function nextSlide() {
+    goToSlide((current + 1) % slides.length);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(nextSlide, 5000);
+  }
+
+  // Initialize
+  resetTimer();
+
+  // Pause on hover
+  const heroSection = document.querySelector('.hero');
+  if (heroSection) {
+    heroSection.addEventListener('mouseenter', () => clearInterval(timer));
+    heroSection.addEventListener('mouseleave', () => resetTimer());
+  }
+</script>
+</body>
+</html>
